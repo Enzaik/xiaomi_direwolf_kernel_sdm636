@@ -539,6 +539,7 @@ asmlinkage __visible void __init start_kernel(void)
 	page_alloc_init();
 
 	pr_notice("Kernel command line: %s\n", boot_command_line);
+
 	p = NULL;
 	p = strstr(boot_command_line, "androidboot.fpsensor=fpc");
 	if (p) {
@@ -562,6 +563,10 @@ asmlinkage __visible void __init start_kernel(void)
 	}
 
 
+
+	/* parameters may set static keys */
+	jump_label_init();
+
 	parse_early_param();
 	after_dashes = parse_args("Booting kernel",
 				  static_command_line, __start___param,
@@ -570,8 +575,6 @@ asmlinkage __visible void __init start_kernel(void)
 	if (!IS_ERR_OR_NULL(after_dashes))
 		parse_args("Setting init args", after_dashes, NULL, 0, -1, -1,
 			   NULL, set_init_arg);
-
-	jump_label_init();
 
 	/*
 	 * These use large bootmem allocations and must precede
